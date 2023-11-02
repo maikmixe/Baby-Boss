@@ -6,24 +6,18 @@
     <style>
         #toothbrush {
             position: absolute;
+            left: 500px;
+            top: 10px;
         }
-        #image-to-disappear {
-        position: absolute;
-        transition: opacity 0.3s;
-        opacity: 1; 
-    }
-
-    #image-to-disappear.hidden {
-        opacity: 0;
-    }
     </style>
 </head>
+
 <body>
     <a href="Menu.html">
         <img src="back.png"
     style ="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
     </a>
-    
+
     <a href="Brushing.html">
         <img src="reload.png" style="position: absolute; top: 400px; left: 900px; width: 300px; height: 200px" />
     </a>
@@ -32,8 +26,9 @@
     <div id="toothbrush">
         <img src="toothbrush.png" style="width: 800px; height: 400px"/>
     </div>
-        <img src = "dirty.png" style = "position: absolute; top: 200px; height: 100px; top: 100px; left: 100px"/>
-
+        <img src = "dirty.png" style = "position: absolute; width: 200px; height: 100px; top: 300px; left: 350px"/>
+        <img src = "dirty1.png" style = "position: absolute; width: 300px; height: 150px; top: 280px; left: 600px"/>
+        <img src = "dirty2.png" style = "position: absolute; width: 200px; height: 100px; top: 380px; left: 450px"/>
     <script>
         var image = document.getElementById("toothbrush");
         var offsetX, offsetY;
