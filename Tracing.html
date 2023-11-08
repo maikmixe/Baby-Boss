@@ -1,16 +1,82 @@
+
 <!DOCTYPE html>
 <html>
-    
-<head> 
-    <meta charset="UTF-8" />
-    <title>Tracing Letter</title>
-    
+<head>
+    <style>
+        #canvas-container {
+            position: relative;
+            width: 400px;
+            height: 200px;
+        }
+
+        #letter-guide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Ensure the image is above the canvas */
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 1px solid black;
+            z-index: 2; /* Ensure the canvas is on top of the image */
+        }
+    </style>
 </head>
-    <body>
-        <a href="Menu.html">
-            <img src="back.png"
-        style ="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
-        </a>
-        
-    </body>
+<body>
+    <h1>Handwriting Tracing Game</h1>
+    <div id="canvas-container">
+        <img id="letter-guide" src="" width="400" height="200" alt="Letter Guide">
+        <canvas id="canvas" width="400" height="200"></canvas>
+    </div>
+    <select id="letter-selector">
+        <option value="letterA.png">Letter A</option>
+        <option value="letter_b.png">Letter B</option>
+        <option value="letter_c.png">Letter C</option>
+    </select>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const letterGuide = document.getElementById('letter-guide');
+        const letterSelector = document.getElementById('letter-selector');
+        let isDrawing = false;
+
+        letterSelector.addEventListener('change', () => {
+            const selectedLetter = letterSelector.value;
+            letterGuide.src = selectedLetter;
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            draw(e);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                draw(e);
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            ctx.beginPath();
+        });
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';
+
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+    </script>
+</body>
 </html>
