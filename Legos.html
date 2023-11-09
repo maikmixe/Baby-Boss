@@ -1,15 +1,94 @@
-<!DOCTYPE html>
-<html>
-    
-<head> 
-    <meta charset="UTF-8" />
-    <title>Stacking Legos</title>
-</head>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Stacking Legos</title>
+        <style>
+            .movable {
+                cursor: pointer;
+            }
+        </style>
+    </head>
     <body>
         <a href="Menu.html">
-            <img src="back.png"
-        style ="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
+            <img src="back.png" style="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
+            <img src="reload.png" style="position: absolute; top: 5px; left: 1100px; width: 200px; height: 150px" />
         </a>
+
+        <img src="block4.png" class="movable" style="position: absolute; top: 200px; left: 750px; width: 200px; height: 50px" />
+        <img src="block4.png" class="movable" style="position: absolute; top: 300px; left: 750px; width: 200px; height: 50px" />
+        <img src="block4.png" class="movable" style="position: absolute; top: 400px; left: 750px; width: 200px; height: 50px" />
+        <img src="block4.png" class="movable" style="position: absolute; top: 500px; left: 750px; width: 200px; height: 50px" />
+        
+        <img src="block3.png" class="movable" style="position: absolute; top: 200px; left: 500px; width: 150px; height: 50px" />
+        <img src="block3.png" class="movable" style="position: absolute; top: 300px; left: 500px; width: 150px; height: 50px" />
+        <img src="block3.png" class="movable" style="position: absolute; top: 400px; left: 500px; width: 150px; height: 50px" />
+        <img src="block3.png" class="movable" style="position: absolute; top: 500px; left: 500px; width: 150px; height: 50px" />
     
+        <img src="block2.png" class="movable" style="position: absolute; top: 200px; left: 250px; width: 100px; height: 50px" />
+        <img src="block2.png" class="movable" style="position: absolute; top: 300px; left: 250px; width: 100px; height: 50px" />
+        <img src="block2.png" class="movable" style="position: absolute; top: 400px; left: 250px; width: 100px; height: 50px" />
+        <img src="block2.png" class="movable" style="position: absolute; top: 500px; left: 250px; width: 100px; height: 50px" />
+
+
+        <script>
+            let selectedBlock = null;
+
+            const blocks = document.querySelectorAll('.movable');
+
+        
+
+            blocks.forEach(block => {
+                block.addEventListener('mousedown', (e) => {
+                    selectedBlock = block;
+                    block.style.zIndex = 1; // Bring the selected block to the top
+                    const offsetX = e.clientX - block.getBoundingClientRect().left;
+                    const offsetY = e.clientY - block.getBoundingClientRect().top;
+        
+                    block.style.position = 'absolute';
+        
+                    document.onmousemove = (e) => {
+                        block.style.left = (e.clientX - offsetX) + 'px';
+                        block.style.top = (e.clientY - offsetY) + 'px';
+        
+
+                        let closestBlock = null;
+                        let minDistance = Number.MAX_SAFE_INTEGER;
+        
+                        blocks.forEach(otherBlock => {
+                            if (otherBlock !== block) {
+                                const rect1 = block.getBoundingClientRect();
+                                const rect2 = otherBlock.getBoundingClientRect();
+                                if (
+                                    rect1.right > rect2.left && rect1.left < rect2.right &&
+                                    rect1.bottom > rect2.top && rect1.top < rect2.bottom
+                                ) {
+                                    const distance = Math.abs(rect2.top - rect1.bottom);
+                                    if (distance < minDistance) {
+                                        minDistance = distance;
+                                        closestBlock = otherBlock;
+                                    }
+                                }
+                            }
+                        });
+        
+                        if (closestBlock) {
+                            const offsetLeft = parseFloat(closestBlock.style.left) - parseFloat(block.style.left);
+                            block.style.left = (parseFloat(block.style.left) + offsetLeft) + 'px';
+                            block.style.top = (parseFloat(closestBlock.style.top) - parseFloat(block.style.height)) + 'px';
+                        }
+
+                    };
+        
+                    block.onmouseup = () => {
+                        selectedBlock = null;
+                        block.style.zIndex = 0; 
+                        document.onmousemove = null;
+                        block.onmouseup = null;
+                    };
+                });
+            });
+        </script>
+        
     </body>
-</html>
+    </html>
