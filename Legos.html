@@ -13,10 +13,10 @@
     <a href="Menu.html">
         <img src="back.png" style="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
     </a>
-    <a href="Legos.html">
+    <a href="#" id="reload-link">
         <img src="reload.png" style="position: absolute; top: 10px; left: 900px; width: 250px; height: 150px" />
     </a>
-
+    <img src = "submit.png" style="position: absolute; top: 600px; left: 900px; width: 200px; height: 100px" />
     <img src="block4.png" class="movable" style="position: absolute; top: 200px; left: 750px; width: 200px; height: 50px" />
     <img src="block4.png" class="movable" style="position: absolute; top: 300px; left: 750px; width: 200px; height: 50px" />
     <img src="block4.png" class="movable" style="position: absolute; top: 400px; left: 750px; width: 200px; height: 50px" />
@@ -32,13 +32,23 @@
     <img src="block2.png" class="movable" style="position: absolute; top: 400px; left: 250px; width: 100px; height: 50px" />
     <img src="block2.png" class="movable" style="position: absolute; top: 500px; left: 250px; width: 100px; height: 50px" />
 
-
     <script>
         let selectedBlock = null;
 
         const blocks = document.querySelectorAll('.movable');
 
-    
+        function shuffleBlocks() {
+            blocks.forEach(block => {
+                const randomTop = Math.floor(Math.random() * 500) + 100;
+                const randomLeft = Math.floor(Math.random() * 700) + 200;
+                block.style.top = `${randomTop}px`;
+                block.style.left = `${randomLeft}px`;
+            });
+        }
+
+        document.getElementById('reload-link').addEventListener('click', () => {
+            shuffleBlocks();
+        });
 
         blocks.forEach(block => {
             block.addEventListener('mousedown', (e) => {
@@ -53,7 +63,6 @@
                     block.style.left = (e.clientX - offsetX) + 'px';
                     block.style.top = (e.clientY - offsetY) + 'px';
     
-
                     let closestBlock = null;
                     let minDistance = Number.MAX_SAFE_INTEGER;
     
@@ -79,7 +88,6 @@
                         block.style.left = (parseFloat(block.style.left) + offsetLeft) + 'px';
                         block.style.top = (parseFloat(closestBlock.style.top) - parseFloat(block.style.height)) + 'px';
                     }
-
                 };
     
                 block.onmouseup = () => {
@@ -91,6 +99,5 @@
             });
         });
     </script>
-    
 </body>
 </html>
