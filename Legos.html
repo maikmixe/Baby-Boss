@@ -7,6 +7,15 @@
         .movable {
             cursor: pointer;
         }
+
+        #submit-img {
+            position: absolute;
+            top: 600px;
+            left: 900px;
+            width: 200px;
+            height: 100px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -16,21 +25,22 @@
     <a href="#" id="reload-link">
         <img src="reload.png" style="position: absolute; top: 10px; left: 900px; width: 250px; height: 150px" />
     </a>
-    <img src = "submit.png" style="position: absolute; top: 600px; left: 900px; width: 200px; height: 100px" />
-    <img src="block4.png" class="movable" style="position: absolute; top: 200px; left: 750px; width: 200px; height: 50px" />
-    <img src="block4.png" class="movable" style="position: absolute; top: 300px; left: 750px; width: 200px; height: 50px" />
-    <img src="block4.png" class="movable" style="position: absolute; top: 400px; left: 750px; width: 200px; height: 50px" />
-    <img src="block4.png" class="movable" style="position: absolute; top: 500px; left: 750px; width: 200px; height: 50px" />
-    
-    <img src="block3.png" class="movable" style="position: absolute; top: 200px; left: 500px; width: 150px; height: 50px" />
-    <img src="block3.png" class="movable" style="position: absolute; top: 300px; left: 500px; width: 150px; height: 50px" />
-    <img src="block3.png" class="movable" style="position: absolute; top: 400px; left: 500px; width: 150px; height: 50px" />
-    <img src="block3.png" class="movable" style="position: absolute; top: 500px; left: 500px; width: 150px; height: 50px" />
+    <img id="submit-img" src="submit.png" />
 
-    <img src="block2.png" class="movable" style="position: absolute; top: 200px; left: 250px; width: 100px; height: 50px" />
-    <img src="block2.png" class="movable" style="position: absolute; top: 300px; left: 250px; width: 100px; height: 50px" />
-    <img src="block2.png" class="movable" style="position: absolute; top: 400px; left: 250px; width: 100px; height: 50px" />
-    <img src="block2.png" class="movable" style="position: absolute; top: 500px; left: 250px; width: 100px; height: 50px" />
+    <img src="block4.png" class="movable" data-number="4" style="position: absolute; top: 200px; left: 750px; width: 200px; height: 50px" />
+    <img src="block4.png" class="movable" data-number="4" style="position: absolute; top: 300px; left: 750px; width: 200px; height: 50px" />
+    <img src="block4.png" class="movable" data-number="4" style="position: absolute; top: 400px; left: 750px; width: 200px; height: 50px" />
+    <img src="block4.png" class="movable" data-number="4" style="position: absolute; top: 500px; left: 750px; width: 200px; height: 50px" />
+
+    <img src="block3.png" class="movable" data-number="3" style="position: absolute; top: 200px; left: 500px; width: 150px; height: 50px" />
+    <img src="block3.png" class="movable" data-number="3" style="position: absolute; top: 300px; left: 500px; width: 150px; height: 50px" />
+    <img src="block3.png" class="movable" data-number="3" style="position: absolute; top: 400px; left: 500px; width: 150px; height: 50px" />
+    <img src="block3.png" class="movable" data-number="3" style="position: absolute; top: 500px; left: 500px; width: 150px; height: 50px" />
+
+    <img src="block2.png" class="movable" data-number="2" style="position: absolute; top: 200px; left: 250px; width: 100px; height: 50px" />
+    <img src="block2.png" class="movable" data-number="2" style="position: absolute; top: 300px; left: 250px; width: 100px; height: 50px" />
+    <img src="block2.png" class="movable" data-number="2" style="position: absolute; top: 400px; left: 250px; width: 100px; height: 50px" />
+    <img src="block2.png" class="movable" data-number="2" style="position: absolute; top: 500px; left: 250px; width: 100px; height: 50px" />
 
     <script>
         let selectedBlock = null;
@@ -46,26 +56,58 @@
             });
         }
 
+        function checkAlignment() {
+            const blockGroups = {};
+
+            blocks.forEach(block => {
+                const dataNumber = block.getAttribute('data-number');
+                if (!blockGroups[dataNumber]) {
+                    blockGroups[dataNumber] = [];
+                }
+                blockGroups[dataNumber].push(parseFloat(block.style.left));
+            });
+
+            let isCorrect = true;
+
+            for (const group in blockGroups) {
+                const positions = blockGroups[group];
+                if (positions.length > 1 && !positions.every(pos => pos === positions[0])) {
+                    isCorrect = false;
+                    break;
+                }
+            }
+
+            if (isCorrect) {
+                alert("Correct alignment!");
+            } else {
+                alert("Incorrect alignment!");
+            }
+        }
+
         document.getElementById('reload-link').addEventListener('click', () => {
             shuffleBlocks();
+        });
+
+        document.getElementById('submit-img').addEventListener('click', () => {
+            checkAlignment();
         });
 
         blocks.forEach(block => {
             block.addEventListener('mousedown', (e) => {
                 selectedBlock = block;
-                block.style.zIndex = 1; // Bring the selected block to the top
+                block.style.zIndex = 1;
                 const offsetX = e.clientX - block.getBoundingClientRect().left;
                 const offsetY = e.clientY - block.getBoundingClientRect().top;
-    
+
                 block.style.position = 'absolute';
-    
+
                 document.onmousemove = (e) => {
                     block.style.left = (e.clientX - offsetX) + 'px';
                     block.style.top = (e.clientY - offsetY) + 'px';
-    
+
                     let closestBlock = null;
                     let minDistance = Number.MAX_SAFE_INTEGER;
-    
+
                     blocks.forEach(otherBlock => {
                         if (otherBlock !== block) {
                             const rect1 = block.getBoundingClientRect();
@@ -82,14 +124,14 @@
                             }
                         }
                     });
-    
+
                     if (closestBlock) {
                         const offsetLeft = parseFloat(closestBlock.style.left) - parseFloat(block.style.left);
                         block.style.left = (parseFloat(block.style.left) + offsetLeft) + 'px';
                         block.style.top = (parseFloat(closestBlock.style.top) - parseFloat(block.style.height)) + 'px';
                     }
                 };
-    
+
                 block.onmouseup = () => {
                     selectedBlock = null;
                     block.style.zIndex = 0; 
