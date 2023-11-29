@@ -1,72 +1,164 @@
 <!DOCTYPE html>
-<html>
-<head> 
-    <meta charset="UTF-8" />
-    <title>Brushing Teeth</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwriting Game</title>
     <style>
-        #toothbrush {
-            position: absolute;
-            left: 500px;
-            top: 10px;
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        canvas {
+            border: 100px solid #0F4C75;
+            margin-top: 20px;
         }
     </style>
-</head>
+    
+    <script>
+        function rr(){
 
+        }
+    </script>
+</head>
 <body>
+    <p id="result"></p>
+    <p id="percentage"></p>
+
+    <canvas id="myCanvas" width="400" height="200" style="border:1px solid #0F4C75;"></canvas>
+
     <a href="Menu.html">
         <img src="back.png" style="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
     </a>
 
-    <a href="Brushing.html">
-        <img src="reload.png" style="position: absolute; top: 400px; left: 900px; width: 300px; height: 200px" />
+    <a id="reload" href="Tracing.html">
+        <img src="reload.png" style="position: absolute; top: 10px; left: 900px; width: 250px; height: 150px" />
     </a>
-    <img src="whiteteeth.png" style="position: absolute; top: 100px; left: 200px; width: 800px; height: 550px" />
-    
-    <div id="toothbrush">
-        <img src="toothbrush.png" style="width: 800px; height: 400px"/> <!-- Adjusted width and height for better visibility -->
-    </div>
-    
-    <img id="dirty1" src="dirty.png" style="position: absolute; width: 200px; height: 100px; top: 300px; left: 350px"/>
-    <img id="dirty2" src="dirty1.png" style="position: absolute; width: 300px; height: 150px; top: 280px; left: 600px"/>
-    <img id="dirty3" src="dirty2.png" style="position: absolute; width: 200px; height: 100px; top: 380px; left: 450px"/>
 
-    <script>
-        var image = document.getElementById("toothbrush");
-        var offsetX, offsetY;
-        var toothbrushMoved = false;
+<script>
+    //onclick="rr()"
+    document.addEventListener('DOMContentLoaded', function () {
+        const canvas = document.getElementById('myCanvas');
+        const context = canvas.getContext('2d');
+        const percentageDisplay = document.getElementById('percentage');
 
-        image.onmousedown = function(event) {
-            offsetX = event.clientX - image.getBoundingClientRect().left;
-            offsetY = event.clientY - image.getBoundingClientRect().top;
+        const drawingPixelSize = 5;
 
-            document.onmousemove = function(event) {
-                var newX = event.clientX - offsetX;
-                var newY = event.clientY - offsetY;
+        let isDrawing = false;
+        let pixelsDrawn = 0;
+        let pixelsOverLetter = 0;
+        let totalLetterPixels;
 
-                image.style.left = newX + "px";
-                image.style.top = newY + "px";
+        const letter = 'A';
+        const fontSize = 200;
+        context.font = `${fontSize}px Arial`;
+        context.fillStyle = "#0F4C75";
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(letter, canvas.width / 2, canvas.height / 2);
 
-                // Set the flag to indicate that the toothbrush has been moved
-                toothbrushMoved = true;
-            }
+        totalLetterPixels = calculateTotalLetterPixels(context, letter, fontSize);
 
-            document.onmouseup = function() {
-                document.onmousemove = null;
-                document.onmouseup = null;
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', drawPixel);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
 
-                if (toothbrushMoved) {
-                    // Set a timeout to make the dirty images disappear after 4 seconds
-                    setTimeout(function() {
-                        document.getElementById("dirty1").style.display = "none";
-                        document.getElementById("dirty2").style.display = "none";
-                        document.getElementById("dirty3").style.display = "none";
-                    }, 4000);
+        function calculateTotalLetterPixels(context, letter, fontSize) {
+            const tempCanvas = document.createElement('canvas');
+            const tempContext = tempCanvas.getContext('2d');
+            tempContext.font = `${fontSize}px Arial`;
+            const textMetrics = tempContext.measureText(letter);
+            tempCanvas.width = textMetrics.width;
+            tempCanvas.height = fontSize;
+            tempContext.font = `${fontSize}px Arial`;
+            tempContext.textAlign = 'center';
+            tempContext.textBaseline = 'middle';
+            tempContext.fillText(letter, tempCanvas.width / 2, tempCanvas.height / 2);
 
-                    // Reset the flag
-                    toothbrushMoved = false;
+            const imageData = tempContext.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            let count = 0;
+            for (let i = 3; i < imageData.data.length; i += 4) {
+                if (imageData.data[i] !== 0) {
+                    count++;
                 }
             }
+
+            return count;
         }
-    </script>
+
+        function startDrawing(e) {
+            isDrawing = true;
+            drawPixel(e);
+        }
+
+        function drawPixel(e) {
+            if (!isDrawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (isPixelInLetter(x, y, fontSize)) {
+                context.fillStyle = 'green';
+                context.fillRect(x - drawingPixelSize / 2, y - drawingPixelSize / 2, drawingPixelSize, drawingPixelSize);
+                pixelsOverLetter++;
+            }
+
+            pixelsDrawn++;
+            updatePercentage();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function isPixelInLetter(x, y, fontSize) {
+            const letterX = canvas.width / 2 - context.measureText(letter).width / 2;
+            const letterY = canvas.height / 2 - fontSize / 2;
+
+            const pixel = context.getImageData(x, y, 1, 1).data;
+            return pixel[3] !== 0;
+        }
+
+        function updatePercentage() {
+            const percentage = (pixelsOverLetter / totalLetterPixels) * 1000;
+            percentageDisplay.style.font = "normal bold 40px courier new";
+            percentageDisplay.style.color = "#0F4C75";
+
+            percentageDisplay.textContent = `accuracy: ${percentage.toFixed(2)}%`;
+
+            console.log(percentage);
+
+            if (pixelsOverLetter === totalLetterPixels) {
+                pixelsDrawn = 0;
+                pixelsOverLetter = 0;
+            }
+        }
+
+        function reloadCanvas() {
+
+            isDrawing = false;
+            pixelsDrawn = 0;
+            pixelsOverLetter = 0;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            context.font = `${fontSize}px Arial`;
+            context.fillStyle = "#FFFFFF";
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(letter, canvas.width / 2, canvas.height / 2);
+
+            totalLetterPixels = calculateTotalLetterPixels(context, letter, fontSize);
+        }
+    });
+</script>
+
 </body>
 </html>
