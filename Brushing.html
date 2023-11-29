@@ -14,8 +14,7 @@
 
 <body>
     <a href="Menu.html">
-        <img src="back.png"
-    style ="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
+        <img src="back.png" style="position: absolute; top: 0px; left: 2px; width: 150px; height: 80px" />
     </a>
 
     <a href="Brushing.html">
@@ -24,38 +23,50 @@
     <img src="whiteteeth.png" style="position: absolute; top: 100px; left: 200px; width: 800px; height: 550px" />
     
     <div id="toothbrush">
-        <img src="toothbrush.png" style="width: 800px; height: 400px"/>
+        <img src="toothbrush.png" style="width: 800px; height: 400px"/> <!-- Adjusted width and height for better visibility -->
     </div>
-        <img src = "dirty.png" style = "position: absolute; width: 200px; height: 100px; top: 300px; left: 350px"/>
-        <img src = "dirty1.png" style = "position: absolute; width: 300px; height: 150px; top: 280px; left: 600px"/>
-        <img src = "dirty2.png" style = "position: absolute; width: 200px; height: 100px; top: 380px; left: 450px"/>
+    
+    <img id="dirty1" src="dirty.png" style="position: absolute; width: 200px; height: 100px; top: 300px; left: 350px"/>
+    <img id="dirty2" src="dirty1.png" style="position: absolute; width: 300px; height: 150px; top: 280px; left: 600px"/>
+    <img id="dirty3" src="dirty2.png" style="position: absolute; width: 200px; height: 100px; top: 380px; left: 450px"/>
+
     <script>
         var image = document.getElementById("toothbrush");
         var offsetX, offsetY;
+        var toothbrushMoved = false;
 
         image.onmousedown = function(event) {
-        
             offsetX = event.clientX - image.getBoundingClientRect().left;
             offsetY = event.clientY - image.getBoundingClientRect().top;
 
             document.onmousemove = function(event) {
-                
                 var newX = event.clientX - offsetX;
                 var newY = event.clientY - offsetY;
 
                 image.style.left = newX + "px";
                 image.style.top = newY + "px";
+
+                // Set the flag to indicate that the toothbrush has been moved
+                toothbrushMoved = true;
             }
 
-
             document.onmouseup = function() {
-        
                 document.onmousemove = null;
                 document.onmouseup = null;
+
+                if (toothbrushMoved) {
+                    // Set a timeout to make the dirty images disappear after 4 seconds
+                    setTimeout(function() {
+                        document.getElementById("dirty1").style.display = "none";
+                        document.getElementById("dirty2").style.display = "none";
+                        document.getElementById("dirty3").style.display = "none";
+                    }, 4000);
+
+                    // Reset the flag
+                    toothbrushMoved = false;
+                }
             }
         }
     </script>
-        
-
 </body>
 </html>
